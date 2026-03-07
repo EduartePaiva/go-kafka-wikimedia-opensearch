@@ -1,0 +1,23 @@
+version: "3"
+
+tasks:
+  help:
+    desc: print this help message
+    cmds:
+      - task --list-all
+    silent: true
+  update:
+    desc: update all packages to the latest version in the project
+    cmds:
+      - go get -u ./...
+      - go mod tidy
+
+  tidy:
+    desc: format all .go files, and tidy and vendor module dependencies
+    cmds:
+      - echo 'Formatting .go files...'
+      - go fmt ./...
+      - echo 'Tidying module dependencies...'
+      - go mod tidy
+      - echo 'Verifying dependencies...'
+      - go mod verify

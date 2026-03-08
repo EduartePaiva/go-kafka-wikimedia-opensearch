@@ -25,7 +25,7 @@ func PushMessageToQueue(producer sarama.SyncProducer, topic string, message []by
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Message is stored in topic(%s)/partition(%d)/offset(%d)", topic, partition, offset)
+	fmt.Printf("Message is stored in topic(%s)/partition(%d)/offset(%d)\n\n", topic, partition, offset)
 
 	return nil
 }

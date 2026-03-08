@@ -72,7 +72,5 @@ services:
       KAFKA_CLUSTERS_0_NAME: local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092 # use internal docker name
       DYNAMIC_CONFIG_ENABLED: "true"
-    restart: unless-stopped
-
 volumes:
   kafka_data:

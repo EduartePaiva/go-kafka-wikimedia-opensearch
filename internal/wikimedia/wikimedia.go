@@ -13,13 +13,14 @@ const (
 	WIKIMEDIA_URL = "https://stream.wikimedia.org/v2/stream/recentchange"
 )
 
-func WikimediaProduceKafka(producer sarama.AsyncProducer, topic string) error {
+func WikimediaProduceKafka(producer sarama.AsyncProducer, topic string) {
 
 	client := sse.NewClient(WIKIMEDIA_URL, func(c *sse.Client) {
 		c.Headers["User-Agent"] = "wikimedia-pet-project/1.0"
 	})
 	events := make(chan *sse.Event, 100)
 	client.SubscribeChan("message", events)
+	defer client.Unsubscribe(events)
 
 	timeout := time.After(time.Second * 5)
 
@@ -55,6 +56,4 @@ Loop:
 			kafka.PushMessageToQueue(producer, topic, msg.Data)
 		}
 	}
-	client.Unsubscribe(events)
-	return producer.Close()
 }

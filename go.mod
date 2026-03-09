@@ -3,7 +3,11 @@ module github.com/eduartepaiva/go-kafka-wikimedia-opensearch
 go 1.26.0
 
 require (
-	github.com/IBM/sarama v1.47.0 // indirect
+	github.com/IBM/sarama v1.47.0
+	github.com/r3labs/sse/v2 v2.10.0
+)
+
+require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/eapache/go-resiliency v1.7.0 // indirect
 	github.com/eapache/queue v1.1.0 // indirect
@@ -18,4 +22,5 @@ require (
 	github.com/rcrowley/go-metrics v0.0.0-20250401214520-65e299d6c5c9 // indirect
 	golang.org/x/crypto v0.48.0 // indirect
 	golang.org/x/net v0.51.0 // indirect
+	gopkg.in/cenkalti/backoff.v1 v1.1.0 // indirect
 )

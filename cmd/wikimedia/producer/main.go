@@ -3,7 +3,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/eduartepaiva/go-kafka-wikimedia-opensearch/internal"
+	"github.com/eduartepaiva/go-kafka-wikimedia-opensearch/internal/kafka"
+	"github.com/eduartepaiva/go-kafka-wikimedia-opensearch/internal/wikimedia"
 )
 
 const (
@@ -12,12 +13,12 @@ const (
 
 func main() {
 
-	producer, err := internal.ConnectToProducer([]string{"localhost:9094"})
+	producer, err := kafka.ConnectToProducer([]string{"localhost:9094"})
 	if err != nil {
 		panic(err)
 	}
 	defer producer.Close()
 	fmt.Println("connected to kafka broker")
 
-	internal.WikimediaProduceKafka(producer, TOPIC)
+	wikimedia.WikimediaProduceKafka(producer, TOPIC)
 }

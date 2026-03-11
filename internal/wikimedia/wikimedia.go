@@ -22,7 +22,7 @@ func WikimediaProduceKafka(producer sarama.AsyncProducer, topic string) {
 	client.SubscribeChan("message", events)
 	defer client.Unsubscribe(events)
 
-	timeout := time.After(time.Second * 5)
+	timeout := time.After(time.Second * 10)
 
 	fmt.Println("scanning producer")
 

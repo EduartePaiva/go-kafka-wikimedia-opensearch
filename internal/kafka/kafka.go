@@ -10,6 +10,8 @@ func ConnectToProducer(brokers []string) (sarama.AsyncProducer, error) {
 	config.Producer.Return.Errors = true
 	config.Producer.RequiredAcks = sarama.WaitForLocal
 	config.Producer.Retry.Max = 5
+	config.Version = sarama.V4_1_1_0
+	config.Producer.Compression = sarama.CompressionSnappy
 
 	return sarama.NewAsyncProducer(brokers, config)
 }

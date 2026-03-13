@@ -24,3 +24,14 @@ func PushMessageToQueue(producer sarama.AsyncProducer, topic string, message []b
 
 	producer.Input() <- msg
 }
+
+func ConnectToConsumerGroup(brokersUrl []string, consumerGroup string) (sarama.ConsumerGroup, error) {
+	config := sarama.NewConfig()
+	config.Consumer.Return.Errors = true
+	config.Consumer.Offsets.Initial = sarama.OffsetOldest
+	config.Consumer.Offsets.AutoCommit.Enable = true
+	config.Consumer.Group.Rebalance.GroupStrategies = []sarama.BalanceStrategy{
+		sarama.NewBalanceStrategySticky(),
+	}
+	return sarama.NewConsumerGroup(brokersUrl, consumerGroup, config)
+}

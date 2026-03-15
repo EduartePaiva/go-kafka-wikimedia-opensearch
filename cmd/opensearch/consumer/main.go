@@ -26,12 +26,12 @@ type consumerGroupHandler struct {
 }
 
 // Cleanup implements [sarama.ConsumerGroupHandler].
-func (c consumerGroupHandler) Cleanup(sarama.ConsumerGroupSession) error {
+func (c *consumerGroupHandler) Cleanup(sarama.ConsumerGroupSession) error {
 	return nil
 }
 
 // ConsumeClaim implements [sarama.ConsumerGroupHandler].
-func (c consumerGroupHandler) ConsumeClaim(session sarama.ConsumerGroupSession, claim sarama.ConsumerGroupClaim) error {
+func (c *consumerGroupHandler) ConsumeClaim(session sarama.ConsumerGroupSession, claim sarama.ConsumerGroupClaim) error {
 	for msg := range claim.Messages() {
 		docId := struct {
 			Meta struct {
@@ -56,7 +56,7 @@ func (c consumerGroupHandler) ConsumeClaim(session sarama.ConsumerGroupSession, 
 }
 
 // Setup implements [sarama.ConsumerGroupHandler].
-func (c consumerGroupHandler) Setup(sarama.ConsumerGroupSession) error {
+func (c *consumerGroupHandler) Setup(sarama.ConsumerGroupSession) error {
 	return nil
 }
 

@@ -1,8 +1,10 @@
 package opensearch
 
 import (
+	"bytes"
 	"context"
 	"crypto/tls"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
@@ -57,6 +59,38 @@ func (c *Client) CreateIndex(indexName string) error {
 		return err
 	}
 	fmt.Printf("Created Index: %s\nShards Acknowledged: %t\n", createIndexResponse.Index, createIndexResponse.ShardsAcknowledged)
+
+	return nil
+}
+
+func (c *Client) AddToIndex(ctx context.Context, indexName string, data []byte) error {
+
+	jsonData := struct {
+		Meta struct {
+			Id string `json:"id"`
+		} `json:"meta"`
+	}{}
+	if err := json.
+		NewDecoder(bytes.NewReader(data)).
+		Decode(&jsonData); err != nil {
+		return err
+	}
+
+	insertResp, err := c.api.Index(
+		ctx,
+		opensearchapi.IndexReq{
+			Index:      indexName,
+			DocumentID: jsonData.Meta.Id,
+			Body:       bytes.NewReader(data),
+			Params: opensearchapi.IndexParams{
+				Refresh: "true",
+			},
+		},
+	)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("Created document in %s ID: %s\n", insertResp.Index, insertResp.ID)
 
 	return nil
 }

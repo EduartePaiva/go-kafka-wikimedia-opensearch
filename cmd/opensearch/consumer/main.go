@@ -16,9 +16,11 @@ import (
 const (
 	TOPIC             = "wikimedia.recentchange"
 	CONSUMER_GROUP_ID = "consumer-opensearch-demo"
+	OPENSEARCH_INDEX  = "wikimedia"
 )
 
 type consumerGroupHandler struct {
+	openSearch *opensearch.Client
 }
 
 // Cleanup implements [sarama.ConsumerGroupHandler].
@@ -29,7 +31,13 @@ func (c consumerGroupHandler) Cleanup(sarama.ConsumerGroupSession) error {
 // ConsumeClaim implements [sarama.ConsumerGroupHandler].
 func (c consumerGroupHandler) ConsumeClaim(session sarama.ConsumerGroupSession, claim sarama.ConsumerGroupClaim) error {
 	for msg := range claim.Messages() {
-		fmt.Printf("received message offset: %d | Topic (%s) | Message %s \n", msg.Offset, msg.Topic, msg.Value[0:10])
+
+		err := c.openSearch.AddToIndex(session.Context(), OPENSEARCH_INDEX, msg.Value)
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+		// fmt.Printf("received message offset: %d | Topic (%s)\n", msg.Offset, msg.Topic)
 		session.MarkMessage(msg, "")
 	}
 	return nil
@@ -48,7 +56,7 @@ func main() {
 	}
 
 	// create index
-	err = oshClient.CreateIndex("wikimedia")
+	err = oshClient.CreateIndex(OPENSEARCH_INDEX)
 	if err != nil {
 		log.Fatal("error creating wikimedia index: ", err)
 	}
@@ -60,7 +68,7 @@ func main() {
 	}
 	defer group.Close()
 
-	handler := &consumerGroupHandler{}
+	handler := &consumerGroupHandler{openSearch: oshClient}
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()

@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"crypto/tls"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
@@ -63,24 +62,12 @@ func (c *Client) CreateIndex(indexName string) error {
 	return nil
 }
 
-func (c *Client) AddToIndex(ctx context.Context, indexName string, data []byte) error {
-
-	jsonData := struct {
-		Meta struct {
-			Id string `json:"id"`
-		} `json:"meta"`
-	}{}
-	if err := json.
-		NewDecoder(bytes.NewReader(data)).
-		Decode(&jsonData); err != nil {
-		return err
-	}
-
+func (c *Client) AddToIndex(ctx context.Context, indexName string, docId string, data []byte) error {
 	insertResp, err := c.api.Index(
 		ctx,
 		opensearchapi.IndexReq{
 			Index:      indexName,
-			DocumentID: jsonData.Meta.Id,
+			DocumentID: docId,
 			Body:       bytes.NewReader(data),
 			Params: opensearchapi.IndexParams{
 				Refresh: "true",

@@ -71,10 +71,12 @@ services:
     environment:
       KAFKA_CLUSTERS_0_NAME: local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092 # use internal docker name
+      KAFKA_CLUSTERS_0_SCHEMAREGISTRY: http://kafka-schema-registry:8081
       DYNAMIC_CONFIG_ENABLED: "true"
   kafka-schema-registry:
     image: confluentinc/cp-schema-registry:8.1.2
     hostname: kafka-schema-registry
+    container_name: schema-registry
     ports:
       - "8081:8081"
     environment:

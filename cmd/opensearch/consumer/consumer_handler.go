@@ -32,8 +32,17 @@ func (c *consumerGroupHandler) ConsumeClaim(session sarama.ConsumerGroupSession,
 			return err
 		}
 
-		err := c.openSearch.AddToIndex(session.Context(), OPENSEARCH_INDEX, docId.Meta.Id, msg.Value)
+		data, err := normalizeDoc(msg.Value)
 		if err != nil {
+			return err
+		}
+
+		err = c.openSearch.AddToIndex(session.Context(), OPENSEARCH_INDEX, docId.Meta.Id, data)
+		if err != nil {
+			fmt.Println("error aqui")
+			fmt.Println("-----------------------------")
+			fmt.Println(string(msg.Value))
+			fmt.Println("-----------------------------")
 			fmt.Println(err)
 			return err
 		}
@@ -46,4 +55,20 @@ func (c *consumerGroupHandler) ConsumeClaim(session sarama.ConsumerGroupSession,
 // Setup implements [sarama.ConsumerGroupHandler].
 func (c *consumerGroupHandler) Setup(sarama.ConsumerGroupSession) error {
 	return nil
+}
+
+func normalizeDoc(data []byte) ([]byte, error) {
+	var doc map[string]any
+	if err := json.Unmarshal(data, &doc); err != nil {
+		return nil, err
+	}
+
+	if val, ok := doc["log_params"]; ok && val != nil {
+		stringified, err := json.Marshal(val)
+		if err == nil {
+			doc["log_params"] = string(stringified)
+		}
+	}
+
+	return json.Marshal(doc)
 }

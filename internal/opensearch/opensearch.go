@@ -38,7 +38,10 @@ func (c *Client) CreateIndex(indexName string) error {
             "number_of_replicas": 0
             }
         }
-    }`)
+    },
+	"mappings": {
+		"dynamic": false
+	}`)
 	ctx := context.Background()
 
 	res, _ := c.api.Indices.Exists(ctx, opensearchapi.IndicesExistsReq{Indices: []string{indexName}})
